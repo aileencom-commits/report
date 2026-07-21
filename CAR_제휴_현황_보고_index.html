@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>CAR 제휴 현황 보고</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --bg-page:#E7E9E6;
+    --bg-slide:#FBFBFA;
+    --ink:#1A1F26;
+    --ink-soft:#5B6169;
+    --line:#DCDED9;
+    --hyundai:#2A78D6;   /* 현대 OS */
+    --hyundai-d:#124A80;
+    --aaos:#1BAF7A;      /* AAOS */
+    --sk:#C98500;        /* SK NUGU/에이닷 */
+    --etc:#E34948;       /* 그 외 탑재형(사양) */
+    --hyundai-bg:#E6F1FB;
+    --aaos-bg:#E1F5EE;
+    --sk-bg:#FAEEDA;
+    --etc-bg:#FCEBEB;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg-page); font-family:'Pretendard',-apple-system,sans-serif;
+    color:var(--ink); font-feature-settings:"tnum";
+  }
+  .deck{ display:flex; flex-direction:column; align-items:center; gap:28px; padding:40px 0 80px; }
+  .slide{
+    width:1280px; height:720px; background:var(--bg-slide);
+    box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.08);
+    position:relative; overflow:hidden; padding:64px 72px;
+    display:flex; flex-direction:column;
+  }
+  .eyebrow{
+    font-size:13px; font-weight:600; letter-spacing:0.14em; color:var(--ink-soft);
+    text-transform:uppercase; margin:0 0 10px;
+  }
+  h1{ font-size:36px; font-weight:700; margin:0 0 6px; letter-spacing:-0.01em; }
+  h2{ font-size:26px; font-weight:700; margin:0 0 4px; letter-spacing:-0.01em; }
+  .sub{ font-size:15px; color:var(--ink-soft); margin:0; font-weight:500; }
+  .pagenum{
+    position:absolute; right:72px; bottom:36px; font-size:12px; color:var(--ink-soft); font-weight:600;
+  }
+  .brand{
+    position:absolute; left:72px; bottom:36px; font-size:12px; color:var(--ink-soft); font-weight:600;
+  }
+  .divider{ height:1px; background:var(--line); margin:20px 0 28px; }
+
+  /* ===== Slide 1 : Title ===== */
+  .s1-cats{ display:flex; gap:16px; margin-top:auto; }
+  .cat-chip{
+    flex:1; border:1px solid var(--line); border-radius:14px; padding:18px 20px; background:#fff;
+  }
+  .cat-chip.active{ border-color:var(--hyundai); background:var(--hyundai-bg); }
+  .cat-chip .k{ font-size:12px; font-weight:700; color:var(--ink-soft); letter-spacing:0.06em; }
+  .cat-chip.active .k{ color:var(--hyundai-d); }
+  .cat-chip .v{ font-size:17px; font-weight:700; margin-top:4px; }
+  .cat-chip .d{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+  .s1-focus{
+    display:inline-flex; align-items:center; gap:8px; margin-top:26px;
+    background:var(--hyundai-bg); color:var(--hyundai-d); font-weight:700; font-size:14px;
+    padding:9px 16px; border-radius:100px; width:fit-content;
+  }
+  .s1-focus .dot{ width:8px; height:8px; border-radius:50%; background:var(--hyundai); }
+
+  /* ===== Slide 2 : bubble structure ===== */
+  .bubble-stage{ position:relative; flex:1; margin-top:8px; }
+  .bubble{
+    position:absolute; border-radius:50%; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; border:1.5px solid transparent;
+  }
+  .bubble .name{ font-weight:700; font-size:15px; }
+  .bubble .num{ font-size:13px; font-weight:600; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .tag{
+    font-size:11.5px; font-weight:600; padding:4px 9px; border-radius:100px; background:#fff;
+    border:1px solid rgba(0,0,0,0.06); white-space:nowrap; box-shadow:0 1px 2px rgba(0,0,0,0.05);
+  }
+  .note-box{
+    position:absolute; right:0; bottom:0; width:300px; font-size:12.5px; color:var(--ink-soft);
+    line-height:1.6; border-top:1px solid var(--line); padding-top:12px;
+  }
+
+  /* ===== interpretation cards (slide 2 footer strip not used; using side panel) ===== */
+  .interp{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:18px;
+  }
+  .interp .card{ border-radius:12px; padding:14px 16px; }
+  .interp .card h3{ font-size:13px; font-weight:700; margin:0 0 6px; }
+  .interp .card p{ font-size:12px; color:var(--ink-soft); margin:0; line-height:1.55; }
+
+  /* ===== chart slides ===== */
+  .chart-wrap{ flex:1; position:relative; margin-top:8px; }
+  .legend-row{ display:flex; gap:18px; margin-top:14px; font-size:12.5px; color:var(--ink-soft); }
+  .legend-row span{ display:flex; align-items:center; gap:6px; }
+  .legend-row i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  .callout{
+    position:absolute; background:#fff; border:1px solid var(--line); border-radius:10px;
+    padding:8px 12px; font-size:11.5px; font-weight:600; color:var(--etc); box-shadow:0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* ===== data table (slide: 규모/YoY 상세표) ===== */
+  .dtable{ width:100%; border-collapse:collapse; margin-top:14px; font-size:13.5px; }
+  .dtable th{
+    text-align:left; font-size:11.5px; font-weight:700; color:var(--ink-soft); letter-spacing:0.04em;
+    padding:8px 12px; border-bottom:1.5px solid var(--ink); text-transform:uppercase;
+  }
+  .dtable td{ padding:8px 12px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+  .dtable td.num, .dtable th.num{ text-align:right; }
+  .dtable tr.grp-first td{ border-top:2px solid var(--line); }
+  .grp-badge{
+    display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:100px;
+  }
+  .yoy-up{ color:#085041; font-weight:700; }
+  .yoy-down{ color:#791F1F; font-weight:700; }
+  .yoy-flat{ color:var(--ink-soft); font-weight:700; }
+
+  /* ===== roadmap table (AAOS / Pleos) ===== */
+  .rtable{ width:100%; border-collapse:collapse; margin-top:10px; font-size:12.5px; }
+  .rtable th{
+    text-align:left; font-size:11px; font-weight:700; color:#085041; letter-spacing:0.03em;
+    padding:7px 10px; border-bottom:1.5px solid var(--aaos); background:var(--aaos-bg);
+  }
+  .rtable td{ padding:8px 10px; border-bottom:1px solid var(--line); }
+  .rtable td.tag-live{ color:#085041; font-weight:700; }
+
+  /* ===== AAOS store x manufacturer structure ===== */
+  .store-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; flex:1; }
+  .store-card{ border-radius:14px; border:1px solid var(--line); background:#fff; padding:16px 18px; display:flex; flex-direction:column; }
+  .store-card .store-name{ font-size:15px; font-weight:700; }
+  .store-card .store-role{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  .store-card .mfr-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .mfr-pill{ font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:100px; }
+  .model-block{ margin-top:10px; font-size:11.5px; color:var(--ink-soft); line-height:1.6; }
+  .model-block b{ color:var(--ink); font-weight:700; }
+
+  /* ===== progress status columns ===== */
+  .status-col h4{ font-size:12.5px; font-weight:700; margin:0 0 5px; display:flex; align-items:center; gap:6px; }
+  .status-item{ border-radius:9px; padding:7px 11px; margin-bottom:5px; font-size:11px; line-height:1.5; }
+  .status-item b{ font-weight:700; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- SLIDE 1 : TITLE / OVERVIEW -->
+<section class="slide">
+  <div class="eyebrow">제휴 서비스 현황 보고 · POC 이용 데이터 기반</div>
+  <h1>제휴 POC 현황 — CAR 카테고리</h1>
+  <p class="sub">전체 제휴 범위(CAR · TV/가전 · Wearable · Service/Platform) 중 CAR 카테고리를 재생수, 재생사용자수 기준으로 분석</p>
+
+  <div class="s1-focus"><span class="dot"></span>이번 보고 포커스 — A. CAR</div>
+
+  <div class="s1-cats">
+    <div class="cat-chip active">
+      <div class="k">A. CAR</div>
+      <div class="v">153,235명</div>
+      <div class="d">현대 OS · SK NUGU · AAOS · 그 외 탑재형<br>이번 보고 대상</div>
+    </div>
+    <div class="cat-chip">
+      <div class="k">B. TV · 가전</div>
+      <div class="v">추후 취합</div>
+      <div class="d">웹기반 TV, 구OS 삼성TV, 스피커 가전 등</div>
+    </div>
+    <div class="cat-chip">
+      <div class="k">C. Wearable</div>
+      <div class="v">추후 취합</div>
+      <div class="d">워치(웨어OS·애플워치), 구OS 워치 등</div>
+    </div>
+    <div class="cat-chip">
+      <div class="k">D. Service · Platform</div>
+      <div class="v">추후 취합</div>
+      <div class="d">삼성뮤직, 틱톡, 위버스, AI 연결(MCP) 등</div>
+    </div>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">01 / 08</div>
+</section>
+
+<!-- SLIDE 2 : BUBBLE STRUCTURE -->
+<section class="slide">
+  <a href="https://docs.google.com/spreadsheets/d/1rMZUZv-gVgLc-xb-G1VMfrFM-_5GA6vYx7U0nrJCLcs/edit?gid=2089627457#gid=2089627457" target="_blank" style="position:absolute; top:28px; right:72px; font-size:11.5px; font-weight:600; color:var(--hyundai); text-decoration:none; border-bottom:1px solid var(--hyundai);">트래픽 지표 →</a>
+  <div class="eyebrow">A. CAR 세부 구조</div>
+  <h2>4개 하위 그룹 규모 — 재생 사용자수(ST_USER_CNT) 기준</h2>
+  <p class="sub">2026년 6월 기준 · 원 크기는 그룹 내 합산 사용자수 (현대 OS 그룹은 축소 축척 표기, 하단 참고)</p>
+
+  <div class="bubble-stage">
+    <!-- 현대 OS -->
+    <div class="bubble" style="width:340px;height:340px; left:40px; top:20px; background:var(--hyundai-bg); border-color:var(--hyundai);">
+      <div class="name" style="color:var(--hyundai-d);">3-1. 현대 자체 OS</div>
+      <div class="num" style="color:var(--hyundai-d);">143,866명</div>
+      <div style="display:flex; gap:6px; margin-top:14px; flex-wrap:wrap; justify-content:center; max-width:260px;">
+        <span class="tag">기아차 64,258</span>
+        <span class="tag">현대차 51,598</span>
+        <span class="tag">제네시스 28,010</span>
+      </div>
+    </div>
+
+    <!-- AAOS -->
+    <div class="bubble" style="width:180px;height:180px; left:470px; top:16px; background:var(--aaos-bg); border-color:var(--aaos);">
+      <div class="name" style="color:#085041; font-size:14px;">3-3. AAOS</div>
+      <div class="num" style="color:#085041; font-size:12px;">5,638명 (+453% YoY)</div>
+      <div style="display:flex; gap:5px; margin-top:8px; flex-wrap:wrap; justify-content:center; max-width:150px;">
+        <span class="tag" style="font-size:10.5px; padding:3px 7px;">BMW·Benz</span>
+        <span class="tag" style="font-size:10.5px; padding:3px 7px;">Volvo·Polestar</span>
+        <span class="tag" style="font-size:10.5px; padding:3px 7px;">Porsche·기아PV5</span>
+      </div>
+    </div>
+
+    <!-- 그 외 탑재형 -->
+    <div class="bubble" style="width:150px;height:150px; left:700px; top:110px; background:var(--etc-bg); border-color:var(--etc);">
+      <div class="name" style="color:#791F1F; font-size:13px;">3-4. 그 외 탑재형</div>
+      <div class="num" style="color:#791F1F; font-size:11.5px;">2,504명 (감소세)</div>
+      <div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap; justify-content:center; max-width:130px;">
+        <span class="tag" style="font-size:10px; padding:2px 6px;">SM6/QM6</span>
+        <span class="tag" style="font-size:10px; padding:2px 6px;">QM3</span>
+        <span class="tag" style="font-size:10px; padding:2px 6px;">미러링크</span>
+      </div>
+    </div>
+
+    <!-- SK NUGU -->
+    <div class="bubble" style="width:120px;height:120px; left:900px; top:8px; background:var(--sk-bg); border-color:var(--sk);">
+      <div class="name" style="color:#633806; font-size:12px;">3-2. SK NUGU</div>
+      <div class="num" style="color:#633806; font-size:10.5px;">1,227명 (전환기)</div>
+      <div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap; justify-content:center; max-width:100px;">
+        <span class="tag" style="font-size:9.5px; padding:2px 5px;">NUGU auto</span>
+        <span class="tag" style="font-size:9.5px; padding:2px 5px;">에이닷 auto</span>
+      </div>
+    </div>
+
+    <div class="interp" style="position:absolute; left:0; right:0; bottom:0;">
+      <div class="card" style="background:var(--hyundai-bg);">
+        <h3 style="color:var(--hyundai-d);">현대 OS · 주력</h3>
+        <p>전체 CAR 사용자의 94%. 현대·기아는 완만한 우상향, 제네시스는 YoY -10%로 유일하게 꺾임.</p>
+      </div>
+      <div class="card" style="background:var(--aaos-bg);">
+        <h3 style="color:#085041;">AAOS · 성장</h3>
+        <p>런칭 2년 만에 32명→5,638명. 완성차사가 계속 늘어나는 유일한 고성장 축.</p>
+      </div>
+      <div class="card" style="background:var(--sk-bg);">
+        <h3 style="color:#633806;">SK · 전환기</h3>
+        <p>NUGU auto -41% 감소, 에이닷 auto가 초기 단계로 대체 중. 세대 전환 진행형.</p>
+      </div>
+      <div class="card" style="background:var(--etc-bg);">
+        <h3 style="color:#791F1F;">그 외 탑재형 · 사양</h3>
+        <p>르노 구형 전 라인 -20~35% 감소, 현대 미러링크는 사용량 0으로 소멸.</p>
+      </div>
+    </div>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">02 / 08</div>
+</section>
+
+<!-- SLIDE 3 : BAR CHART RANKING -->
+<section class="slide">
+  <div class="eyebrow">A. CAR 세부 순위</div>
+  <h2>POC별 재생 사용자수(ST_USER_CNT) 순위</h2>
+  <p class="sub">2026년 6월 기준 · 색상은 소속 그룹 표시</p>
+  <div class="chart-wrap">
+    <canvas id="barChart" role="img" aria-label="CAR POC별 2026년 6월 재생 사용자수 순위: 기아차 64258, 현대차 51598, 제네시스 28010, AAOS 5638, 르노 MM2014 1929, SKT NUGU auto 1035, 르노 T2C 556, 에이닷 auto 192, 르노 MM2012 19, 현대 미러링크 0"></canvas>
+  </div>
+  <div class="legend-row">
+    <span><i style="background:var(--hyundai);"></i>현대 자체 OS</span>
+    <span><i style="background:var(--aaos);"></i>AAOS</span>
+    <span><i style="background:var(--sk);"></i>SK NUGU · 에이닷</span>
+    <span><i style="background:var(--etc);"></i>그 외 탑재형(사양)</span>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">03 / 08</div>
+</section>
+
+<!-- SLIDE 4 : DETAIL TABLE (3강·신흥·나머지 + YoY, ST_USER_CNT & ST_CNT) -->
+<section class="slide">
+  <div class="eyebrow">A. CAR 세부 지표</div>
+  <h2>그룹별 규모 · YoY 상세 — 재생 사용자수 &amp; 스트리밍 카운트</h2>
+  <p class="sub">2026년 6월 vs 2025년 6월 기준 · ST_USER_CNT(재생 사용자수) · ST_CNT(스트리밍 카운트)</p>
+
+  <table class="dtable">
+    <thead>
+      <tr>
+        <th>그룹</th><th>POC</th>
+        <th class="num">ST_USER_CNT<br>26.06</th><th class="num">YoY</th>
+        <th class="num">ST_CNT<br>26.06</th><th class="num">YoY</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="grp-first">
+        <td rowspan="3"><span class="grp-badge" style="background:var(--hyundai-bg); color:var(--hyundai-d);">3강 · 현대 OS</span></td>
+        <td>기아차(LM67)</td><td class="num">64,258</td><td class="num yoy-up">+0.7%</td><td class="num">19,584,882</td><td class="num yoy-up">+2.5%</td>
+      </tr>
+      <tr><td>현대차(LM66)</td><td class="num">51,598</td><td class="num yoy-up">+0.3%</td><td class="num">15,441,483</td><td class="num yoy-up">+2.0%</td></tr>
+      <tr><td>제네시스(LM68)</td><td class="num">28,010</td><td class="num yoy-down">-10.0%</td><td class="num">6,591,464</td><td class="num yoy-down">-15.0%</td></tr>
+
+      <tr class="grp-first">
+        <td><span class="grp-badge" style="background:var(--aaos-bg); color:#085041;">신흥 · AAOS</span></td>
+        <td>AAOS(AM6C) 6개 완성차</td><td class="num">5,638</td><td class="num yoy-up">+452.7%</td><td class="num">1,106,143</td><td class="num yoy-up">+370.9%</td>
+      </tr>
+
+      <tr class="grp-first">
+        <td rowspan="2"><span class="grp-badge" style="background:var(--sk-bg); color:#633806;">전환기 · SK</span></td>
+        <td>SKT NUGU auto</td><td class="num">1,035</td><td class="num yoy-down">-41.0%</td><td class="num">135,498</td><td class="num yoy-down">-41.8%</td>
+      </tr>
+      <tr><td>에이닷 auto(르노 필랑트)</td><td class="num">192</td><td class="num yoy-flat">신규(24.03)</td><td class="num">18,545</td><td class="num yoy-flat">신규(24.03)</td></tr>
+
+      <tr class="grp-first">
+        <td rowspan="4"><span class="grp-badge" style="background:var(--etc-bg); color:#791F1F;">나머지 · 그 외 탑재형</span></td>
+        <td>르노 MM2014(SM6/QM6)</td><td class="num">1,929</td><td class="num yoy-down">-34.7%</td><td class="num">205,298</td><td class="num yoy-down">-32.7%</td>
+      </tr>
+      <tr><td>르노 T2C(QM3)</td><td class="num">556</td><td class="num yoy-down">-29.7%</td><td class="num">101,520</td><td class="num yoy-down">-21.4%</td></tr>
+      <tr><td>르노 MM2012(SM3/SM5)</td><td class="num">19</td><td class="num yoy-down">-20.8%</td><td class="num">3,031</td><td class="num yoy-down">-26.7%</td></tr>
+      <tr><td>현대 미러링크(AS64)</td><td class="num">0</td><td class="num yoy-flat">소멸</td><td class="num">-</td><td class="num yoy-flat">집계 불가</td></tr>
+    </tbody>
+  </table>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px;">
+    <div style="border-radius:12px; background:var(--hyundai-bg); padding:10px 14px; font-size:11.5px; color:var(--hyundai-d); line-height:1.55;">
+      <b>제네시스 -10.0%</b> — 판매대수 자체 감소: 25.06 10,454대 → 26.06 7,936대(-24.1%). 현대차는 같은 기간 약 1,000대만 감소해 방어. 서비스 이슈가 아닌 신차 판매 감소 반영.
+    </div>
+    <div style="border-radius:12px; background:var(--sk-bg); padding:10px 14px; font-size:11.5px; color:#633806; line-height:1.55;">
+      <b>SKT NUGU auto -41.0%</b> — 25.10부터 TMAP-NUGU 앱 업데이트 시 TMAP-에이닷으로 강제 전환되며 멜론 연결이 제외됨. 서비스 자체 전환에 따른 구조적 감소.
+    </div>
+    <div style="border-radius:12px; background:var(--etc-bg); padding:10px 14px; font-size:11.5px; color:#791F1F; line-height:1.55;">
+      <b>르노 3종(MM2012/MM2014/T2C)</b> — 인증서 보안 이슈로 일부 차량 지원 불가 발생 + 노후 차종 자연 감소 추세가 중첩된 결과.
+    </div>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">04 / 08</div>
+</section>
+
+<!-- SLIDE 5 : TREND (USER CNT) -->
+<section class="slide">
+  <div class="eyebrow">A. CAR 세부 추이</div>
+  <h2>월별 이용자수 추이 (2024.01 ~ 2026.06)</h2>
+  <p class="sub">주요 POC 6종 · 성장 · 안정 · 감소 흐름 비교</p>
+  <div class="chart-wrap">
+    <canvas id="lineChart" role="img" aria-label="2024년 1월부터 2026년 6월까지 기아차, 현대차, 제네시스, AAOS, SKT NUGU auto, 르노 MM2014의 월별 재생 사용자수 추이선 그래프"></canvas>
+  </div>
+  <div class="legend-row">
+    <span><i style="background:#124A80;"></i>현대차</span>
+    <span><i style="background:#2A78D6;"></i>기아차</span>
+    <span><i style="background:#8FC1EE;"></i>제네시스</span>
+    <span><i style="background:var(--aaos);"></i>AAOS</span>
+    <span><i style="background:var(--sk);"></i>SKT NUGU auto</span>
+    <span><i style="background:var(--etc);"></i>르노 MM2014</span>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">05 / 08</div>
+</section>
+
+<!-- SLIDE 6 : TREND (STREAMING CNT) -->
+<section class="slide">
+  <div class="eyebrow">A. CAR 세부 추이</div>
+  <h2>월별 스트리밍 카운트 추이 (ST_CNT, 2024.01 ~ 2026.06)</h2>
+  <p class="sub">동일 POC 6종 · 재생 사용자수 대비 스트리밍 빈도(1인당 재생 횟수) 흐름 비교</p>
+  <div class="chart-wrap">
+    <canvas id="lineChartCnt" role="img" aria-label="2024년 1월부터 2026년 6월까지 기아차, 현대차, 제네시스, AAOS, SKT NUGU auto, 르노 MM2014의 월별 스트리밍 카운트 추이선 그래프"></canvas>
+  </div>
+  <div class="legend-row">
+    <span><i style="background:#124A80;"></i>현대차</span>
+    <span><i style="background:#2A78D6;"></i>기아차</span>
+    <span><i style="background:#8FC1EE;"></i>제네시스</span>
+    <span><i style="background:var(--aaos);"></i>AAOS</span>
+    <span><i style="background:var(--sk);"></i>SKT NUGU auto</span>
+    <span><i style="background:var(--etc);"></i>르노 MM2014</span>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+    <div style="border-radius:12px; background:var(--hyundai-bg); padding:10px 14px; font-size:11.5px; color:var(--hyundai-d); line-height:1.55;">
+      <b>계절성 패턴(현대차·기아차·제네시스)</b> — 매년 2월은 짧은 일수(28일) 영향으로 1인당 스트리밍 횟수가 저점, 7~8월은 휴가철 장거리 운행 영향으로 연중 고점을 기록. 3개 POC 공통으로 매년 반복.
+    </div>
+    <div style="border-radius:12px; background:var(--etc-bg); padding:10px 14px; font-size:11.5px; color:#791F1F; line-height:1.55;">
+      <b>25.02 급감 — 계절성과 무관한 장애</b> — 인증서 이슈로 구형 안드로이드 OS 탑재 차량에서 재생 불가 장애 발생. 위 계절적 저점과 겹쳐 더 크게 꺾인 것으로, 구조적 계절성과는 별개의 일회성 이슈.
+    </div>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">06 / 08</div>
+</section>
+
+<!-- SLIDE 7 : AAOS STORE x MANUFACTURER STRUCTURE -->
+<section class="slide">
+  <div class="eyebrow">A. CAR 신흥 · AAOS 딥다이브</div>
+  <h2>AAOS 구조 — 스토어 × 제조사 페어링</h2>
+  <p class="sub">AAOS는 스토어(마켓플레이스)와 완성차 제조사가 1:1로 엮여 있는 구조 · 4개 스토어 기준 정리</p>
+
+  <div class="store-grid">
+    <div class="store-card">
+      <div class="store-name">Appning</div>
+      <div class="store-role">developer portal · developers.appning.com</div>
+      <div class="mfr-row">
+        <span class="mfr-pill" style="background:var(--hyundai-bg); color:var(--hyundai-d);">BMW</span>
+        <span class="mfr-pill" style="background:var(--hyundai-bg); color:var(--hyundai-d);">Mercedes-Benz</span>
+      </div>
+      <div class="model-block">
+        <b>BMW</b> — X1, X2, X3, 2시리즈 그랑쿠페, 2시리즈 액티브투어러, MINI Cooper, MINI Countryman, MINI Aceman<br>
+        <b>Mercedes</b> — E-Class, CLE, C-Class, GLC, CLA
+      </div>
+    </div>
+
+    <div class="store-card">
+      <div class="store-name">Harman Ready Link Marketplace</div>
+      <div class="store-role">Volkswagen 그룹 제조사 대상</div>
+      <div class="mfr-row">
+        <span class="mfr-pill" style="background:#EEEDFE; color:#26215C;">Audi</span>
+        <span class="mfr-pill" style="background:#EEEDFE; color:#26215C;">Porsche</span>
+        <span class="mfr-pill" style="background:#EEEDFE; color:#26215C;">Bentley</span>
+        <span class="mfr-pill" style="background:#EEEDFE; color:#26215C;">Volkswagen</span>
+      </div>
+      <div class="model-block">
+        <b>Audi</b> — A5, A6, Q5, Q6, A6 e-tron, Q6 e-tron<br>
+        <b>Porsche</b> — 26년형 911·타이칸·파나메라·카이엔<br>
+        <b>Bentley</b> — 25년 신모델 · <b>Volkswagen</b> — 27년 도입 예정
+      </div>
+    </div>
+
+    <div class="store-card">
+      <div class="store-name">TMAP</div>
+      <div class="store-role">차량용 인포테인먼트 스토어</div>
+      <div class="mfr-row">
+        <span class="mfr-pill" style="background:var(--sk-bg); color:#633806;">Volvo</span>
+        <span class="mfr-pill" style="background:var(--sk-bg); color:#633806;">Polestar</span>
+        <span class="mfr-pill" style="background:var(--etc-bg); color:#791F1F;">Xfeng(논의중)</span>
+      </div>
+      <div class="model-block">확인된 탑재 차량 모델 — 확인된 사항 없음 (제조사 레벨 페어링만 확정)</div>
+    </div>
+
+    <div class="store-card">
+      <div class="store-name">Pleos 앱마켓 (Pleos Connect)</div>
+      <div class="store-role">현대차그룹 자체 AAOS 스토어</div>
+      <div class="mfr-row">
+        <span class="mfr-pill" style="background:var(--aaos-bg); color:#085041;">현대</span>
+        <span class="mfr-pill" style="background:var(--aaos-bg); color:#085041;">기아</span>
+        <span class="mfr-pill" style="background:var(--aaos-bg); color:#085041;">제네시스</span>
+      </div>
+      <div class="model-block">
+        <b>Pleos Connect</b> — 현대/기아/제네시스 신모델<br>
+        <b>INFOLINK</b> — 기아 PV5
+      </div>
+    </div>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">07 / 08</div>
+</section>
+
+<!-- SLIDE 8 : AAOS TREND + PROGRESS STATUS -->
+<section class="slide">
+  <div class="eyebrow">A. CAR 신흥 · AAOS 딥다이브</div>
+  <h2>AAOS 상세 — 이용자수 추이 &amp; 진행 현황</h2>
+  <p class="sub">2024.02 런칭 이후 CAR 카테고리 내 유일한 고성장 축 · 스토어별 현재/향후 진행 현황</p>
+
+  <div style="display:flex; gap:32px; flex:1; margin-top:8px;">
+    <div style="flex:1.1; display:flex; flex-direction:column;">
+      <div class="chart-wrap" style="flex:1;">
+        <canvas id="aaosChart" role="img" aria-label="AAOS 월별 재생 사용자수 추이, 2024년 2월 32명에서 2026년 6월 5638명까지 성장"></canvas>
+      </div>
+      <p style="font-size:12px; color:var(--ink-soft); margin-top:8px; line-height:1.6;">
+        기존 순위 차트에서는 현대·기아 규모에 눌려 잘 보이지 않던 AAOS 단독 곡선. 24.11부터 기울기가 뚜렷하게 꺾여 올라가며, 25.11~26.02 구간 성장이 가장 가팔랐음.
+      </p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+      <div class="status-col">
+        <h4><span style="width:8px;height:8px;border-radius:50%;background:var(--aaos);display:inline-block;"></span>현재 진행중 (상용 적용)</h4>
+        <div class="status-item" style="background:var(--hyundai-bg);"><b>Appning</b> — BMW 8종(X1/X2/X3/2GC/2AT/MINI 3종), Benz 5종(E-Class/CLE/C-Class/GLC/CLA) 상용 운영</div>
+        <div class="status-item" style="background:#EEEDFE;"><b>Harman</b> — Audi 6종(A5/A6/Q5/Q6/e-tron 2종), Porsche 26년형 4종(911/타이칸/파나메라/카이엔), Bentley 25년 신모델 운영</div>
+        <div class="status-item" style="background:var(--aaos-bg);"><b>Pleos</b> — 현대/기아/제네시스 신모델(Pleos Connect), 기아 PV5(INFOLINK) 운영</div>
+      </div>
+      <div class="status-col">
+        <h4><span style="width:8px;height:8px;border-radius:50%;background:var(--sk);display:inline-block;"></span>향후 진행 예정</h4>
+        <div class="status-item" style="background:var(--etc-bg);"><b>Pleos 로드맵</b> — 그랜저(26.07 멜론 적용), 아반떼·투싼·GV90(26.08~09 양산), G90·싼타페(26.12 양산)까지 순차 확대</div>
+        <div class="status-item" style="background:#EEEDFE;"><b>Harman</b> — Volkswagen 27년 도입 예정 (Audi·Porsche·Bentley 다음 순번)</div>
+        <div class="status-item" style="background:var(--sk-bg);"><b>TMAP</b> — Xfeng 신규 제조사 페어링 논의중, Volvo·Polestar는 제조사 확정이나 탑재 모델 미확인</div>
+      </div>
+      <div style="border-radius:10px; background:#fff; border:1px solid var(--line); padding:9px 12px; margin-top:0;">
+        <h4 style="font-size:12px; margin:0 0 6px;">예상되는 트래픽 상승요인 (외부 검증 결과)</h4>
+        <div class="status-item" style="background:var(--aaos-bg); color:#085041; padding:6px 10px; font-size:10.5px; margin-bottom:5px;">
+          <b>✓ 기아 PV5 (25.08~ 출고)</b> — 사전계약 25.06.10, 출고 25.08 확인됨. 25.11부터 급증 반영은 신차 인도 후 약 3개월 지연 추정.
+        </div>
+        <div class="status-item" style="background:var(--sk-bg); color:#633806; padding:6px 10px; font-size:10.5px; margin-bottom:5px;">
+          <b>△ 볼보·폴스타 TMAP→AAOS 전환</b> — 26.01부터 NUGU auto 급감(-1,247명)과 타이밍은 부합. AAOS 증가분의 약 33%만 설명 가능, 나머지는 다른 요인.
+        </div>
+        <div class="status-item" style="background:var(--aaos-bg); color:#085041; padding:6px 10px; font-size:10.5px;">
+          <b>✓ 포르쉐 26년형(911·타이칸·파나메라·카이엔)</b> — App Center를 통해 AAOS 기반 설치가 가능한 구조로 확인됨.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="brand">제휴 POC 월간 이용량 분석</div>
+  <div class="pagenum">08 / 08</div>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+// ---- Bar chart ----
+const barLabels = ['기아차','현대차','제네시스','AAOS(BMW·Benz 등)','르노 MM2014(SM6/QM6)','SKT NUGU auto','르노 T2C(QM3)','에이닷 auto','르노 MM2012(SM3/SM5)','현대 미러링크'];
+const barValues = [64258,51598,28010,5638,1929,1035,556,192,19,0];
+const barColors = ['#2A78D6','#2A78D6','#2A78D6','#1BAF7A','#E34948','#C98500','#E34948','#C98500','#E34948','#E34948'];
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: { labels: barLabels, datasets: [{ data: barValues, backgroundColor: barColors, borderRadius: 4, barThickness: 26 }] },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display:false }, tooltip: { callbacks: { label:(c)=>c.parsed.x.toLocaleString()+'명' } } },
+    scales: {
+      x: { ticks:{ callback:(v)=>v.toLocaleString(), font:{size:12} }, grid:{ color:'#E1E0D9' } },
+      y: { grid:{ display:false }, ticks:{ font:{size:13, weight:600} } }
+    }
+  }
+});
+
+// ---- Line chart ----
+const labels = ["24.01","24.02","24.03","24.04","24.05","24.06","24.07","24.08","24.09","24.10","24.11","24.12","25.01","25.02","25.03","25.04","25.05","25.06","25.07","25.08","25.09","25.10","25.11","25.12","26.01","26.02","26.03","26.04","26.05","26.06"];
+const s = {
+"기아차": [44101,46334,48988,50310,52365,53825,55471,57719,59186,59512,60361,61195,62574,62221,63989,63044,64326,63832,64517,65039,63758,64934,63999,64395,64671,64658,64995,64771,65533,64258],
+"현대차": [34570,36098,38023,39377,40908,42120,43511,44832,45868,46396,47230,47843,49223,49380,50692,50483,51839,51432,51841,52329,51337,52205,51377,51782,51734,51534,52180,52112,52669,51598],
+"제네시스": [21452,22810,23944,25018,26010,26893,28305,29237,30551,30594,30895,30785,31292,31172,32383,32374,32033,31105,31089,31068,30059,30451,29772,29593,29287,29232,29069,28562,28762,28010],
+"AAOS": [null,32,55,58,64,95,115,207,285,367,393,523,628,728,842,872,966,1020,1108,1138,1107,1227,1891,2684,3520,3940,4619,4913,5249,5638],
+"SKT_NUGU": [315,354,399,414,482,510,552,615,685,855,1051,1175,1266,1327,1514,1565,1682,1755,1816,1866,1853,1926,2161,2282,1861,1175,1109,1083,1102,1035],
+"르노MM2014": [4169,4264,4132,3969,3995,3904,3826,3881,3754,3573,3533,3398,3460,3172,3249,3060,3108,2952,2939,3095,2770,2888,2613,2431,2292,2268,2126,2082,2150,1929]
+};
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label:'현대차', data:s['현대차'], borderColor:'#124A80', backgroundColor:'#124A80', borderWidth:2, pointRadius:0, tension:0.25 },
+      { label:'기아차', data:s['기아차'], borderColor:'#2A78D6', backgroundColor:'#2A78D6', borderWidth:2, pointRadius:0, tension:0.25 },
+      { label:'제네시스', data:s['제네시스'], borderColor:'#8FC1EE', backgroundColor:'#8FC1EE', borderWidth:2, borderDash:[5,3], pointRadius:0, tension:0.25 },
+      { label:'AAOS', data:s['AAOS'], borderColor:'#1BAF7A', backgroundColor:'#1BAF7A', borderWidth:2.5, pointRadius:0, tension:0.25 },
+      { label:'SKT NUGU auto', data:s['SKT_NUGU'], borderColor:'#C98500', backgroundColor:'#C98500', borderWidth:2, borderDash:[2,2], pointRadius:0, tension:0.25 },
+      { label:'르노 MM2014', data:s['르노MM2014'], borderColor:'#E34948', backgroundColor:'#E34948', borderWidth:2, borderDash:[6,3], pointRadius:0, tension:0.25 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false } },
+    interaction:{ mode:'index', intersect:false },
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ maxRotation:0, autoSkip:true, font:{size:11} } },
+      y:{ grid:{ color:'#E1E0D9' }, ticks:{ callback:(v)=>v.toLocaleString(), font:{size:11} } }
+    }
+  }
+});
+
+// ---- Streaming count (ST_CNT) line chart ----
+const sc = {
+"현대차": [9086295,9494717,10703170,10923451,11771207,12196311,12925482,13907149,13676738,13685466,13769219,13640312,13683923,12502463,14572141,14502623,15666018,15136813,16501399,16830775,15463092,16142583,15191757,15450499,15023431,14278860,15114547,15191876,16500980,15441483],
+"기아차": [12269908,12762860,14321675,14535356,15677908,16070887,16966971,18500598,18116147,17921302,18102010,17839697,17970683,16062533,18640935,18373932,19963149,19115842,21005480,21663284,19656730,20810349,19349978,19634067,19299772,18312520,19088904,19173328,21010645,19584882],
+"제네시스": [5808245,6193764,6869588,7048149,7636335,7755654,8273484,8903363,8611917,8228172,8202873,7884917,7940656,7054359,8247486,8050373,8332013,7753977,8297599,8432070,7576620,7973432,7286060,7243065,6930308,6590506,6564530,6537506,7230328,6591464],
+"AAOS": [null,1690,4116,5567,7726,8921,17239,37448,54614,70556,72798,91477,124295,132241,178299,185562,223362,234921,265014,286752,275746,294584,369869,487272,653055,736622,913320,1018944,1159164,1106143],
+"SKT_NUGU": [26373,30661,35903,40582,53234,63908,69411,79689,92392,112992,137947,145107,161756,151251,203479,214717,246929,232749,257876,268835,249527,278142,276304,269108,167647,141874,127106,122818,150352,135498],
+"르노MM2014": [420366,431573,451255,437038,462704,438701,423684,432004,408116,394464,385116,346531,348524,287359,319918,298248,339255,304891,320644,352163,297613,326715,272697,254831,227549,231550,211800,208900,244861,205298]
+};
+new Chart(document.getElementById('lineChartCnt'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label:'현대차', data:sc['현대차'], borderColor:'#124A80', backgroundColor:'#124A80', borderWidth:2, pointRadius:0, tension:0.25 },
+      { label:'기아차', data:sc['기아차'], borderColor:'#2A78D6', backgroundColor:'#2A78D6', borderWidth:2, pointRadius:0, tension:0.25 },
+      { label:'제네시스', data:sc['제네시스'], borderColor:'#8FC1EE', backgroundColor:'#8FC1EE', borderWidth:2, borderDash:[5,3], pointRadius:0, tension:0.25 },
+      { label:'AAOS', data:sc['AAOS'], borderColor:'#1BAF7A', backgroundColor:'#1BAF7A', borderWidth:2.5, pointRadius:0, tension:0.25 },
+      { label:'SKT NUGU auto', data:sc['SKT_NUGU'], borderColor:'#C98500', backgroundColor:'#C98500', borderWidth:2, borderDash:[2,2], pointRadius:0, tension:0.25 },
+      { label:'르노 MM2014', data:sc['르노MM2014'], borderColor:'#E34948', backgroundColor:'#E34948', borderWidth:2, borderDash:[6,3], pointRadius:0, tension:0.25 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, callbacks:{ label:(c)=>c.dataset.label+': '+c.parsed.y.toLocaleString()+'회' } } },
+    interaction:{ mode:'index', intersect:false },
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ maxRotation:0, autoSkip:true, font:{size:11} } },
+      y:{ grid:{ color:'#E1E0D9' }, ticks:{ callback:(v)=>v.toLocaleString(), font:{size:11} } }
+    }
+  }
+});
+
+// ---- AAOS zoomed detail chart ----
+const aaosLabels = labels.slice(1); // from 24.02
+const aaosVals = s['AAOS'].slice(1);
+new Chart(document.getElementById('aaosChart'), {
+  type: 'line',
+  data: {
+    labels: aaosLabels,
+    datasets: [{
+      label:'AAOS', data:aaosVals, borderColor:'#1BAF7A', backgroundColor:'rgba(27,175,122,0.12)',
+      borderWidth:2.5, pointRadius:2, pointBackgroundColor:'#1BAF7A', tension:0.3, fill:true
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:(c)=>c.parsed.y.toLocaleString()+'명' } } },
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ maxRotation:0, autoSkip:true, font:{size:10} } },
+      y:{ grid:{ color:'#E1E0D9' }, ticks:{ callback:(v)=>v.toLocaleString(), font:{size:11} } }
+    }
+  }
+});
+</script>
+</body>
+</html>
